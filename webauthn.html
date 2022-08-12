@@ -6,6 +6,12 @@
     .retTxt {
         padding-left: 20px;
     }
+    .divInputOuter {
+        margin-left: 20px;
+    }
+    .divInputOuter div{
+        margin-bottom: 5px;
+    }
 </style>
         <script type="text/javascript" src="https://unpkg.com/cbor-js-unofficial@0.1.0-a4/cbor.js"></script>
         <script src="https://cdn.jsdelivr.net/gh/herrjemand/Base64URL-ArrayBuffer@latest/lib/base64url-arraybuffer.js"></script>
@@ -18,6 +24,11 @@ function binToStr(bin){
 function strToBin(str) {
   return Uint8Array.from(atob(str), c => c.charCodeAt(0));
 };
+
+function cleanStr(str) {
+    var newstr = str.replace(new RegExp('_', 'g'), '/').replace(new RegExp('-', 'g'), '+');
+    return newstr;
+}
 
 function getAuthenticatorSelection(){
    var authenticatorAttachment = document.getElementById("authenticatorAttachment").value;
@@ -39,7 +50,7 @@ function getAuthenticatorSelection(){
 }
 
 function getUserObj(){
-   var userId = document.getElementById("userIdfield").value;
+   var userId = document.getElementById("userIdField").value;
    var userDisplayName = document.getElementById("userDisplayNameField").value;
 
    if(userDisplayName == "") {
@@ -57,47 +68,50 @@ function getUserObj(){
    return userObj;
 }
 
-const publicKeyCredentialCreationOptions = {
-    challenge: Uint8Array.from(     // This should be a random binary array
-        "challenge", c => c.charCodeAt(0)),   // should be a random string
-    rp: {
-        name: "test site",
-        id: "2acf-69-220-155-165.ngrok.io",
-    },
-    user: {
-        id: Uint8Array.from(
-            "id_2", c => c.charCodeAt(0)),
-        name: "name_1",
-        displayName: "displayname_1",
-    },
-    pubKeyCredParams: [{alg: -7, type: "public-key"}, {alg: -257, type: "public-key"}],
-    authenticatorSelection: {
-        authenticatorAttachment: "platform",
-	    requireResidentKey: true,
-	    residentKey: "required", //"preferred",
-	    userVerification: "preferred",
-    },
-    timeout: 60000,
-    //attestation: "direct",
-    extensions: {
-       credProps: true,
-       devicePubKey: true
-    }
-};
+function getExtension(){
+    var extension = {
+       credProps: document.getElementById("credProps").checked,
+       devicePubKey: document.getElementById("devicePubKey").checked
+    };
+    return extension;
+}
+
+function getRP(){
+    var rp = {
+        name: document.getElementById("rpNameField").value,
+        id: document.getElementById("rpIdField").value
+    };
+    return rp;
+}
+
+function getPublicKeyCredentialCreationOptions(){
+    var publicKeyCredentialCreationOptions = {
+        challenge: Uint8Array.from(     // This should be a random binary array
+            "challenge", c => c.charCodeAt(0)),   // should be a random string
+        rp: getRP(),
+        user: getUserObj(),
+        pubKeyCredParams: [{alg: -7, type: "public-key"}, {alg: -257, type: "public-key"}],
+        authenticatorSelection: getAuthenticatorSelection(),
+        timeout: 60000,
+        //attestation: "direct",
+        extensions: getExtension()
+    };
+    return publicKeyCredentialCreationOptions;
+}
 
 function register() {
    var credId = document.getElementById("credIdfield").value;
-   var newCredId = credId.replace(new RegExp('_', 'g'), '/').replace(new RegExp('-', 'g'), '+');
    const credentials = [];
-   credentials.push({
-	type: 'public-key',
-	id: Uint8Array.from(atob(newCredId), c => c.charCodeAt(0)),
-   });
-   publicKeyCredentialCreationOptions.excludeCredentials = credentials;
-   publicKeyCredentialCreationOptions.user = getUserObj();
-   publicKeyCredentialCreationOptions.authenticatorSelection = getAuthenticatorSelection();
+   if(credId!=""){
+    credentials.push({
+        type: 'public-key',
+        id: strToBin(cleanStr(newCredId)),
+    });
+   }
+   var pubCreationOption = getPublicKeyCredentialCreationOptions();
+   pubCreationOption.excludeCredentials = credentials;
    navigator.credentials.create({
-        publicKey: publicKeyCredentialCreationOptions
+        publicKey: pubCreationOption
    }).then(credential => {
 
         console.log(credential);
@@ -166,7 +180,11 @@ function register() {
         const publicKeyObject = CBOR.decode(publicKeyBytes.buffer);
         console.log(publicKeyObject)
 
-	    document.getElementById("allCredId").innerHTML = document.getElementById("allCredId").innerHTML + "<br />" + credentialIdAscii;
+        var allCredIdHTML = document.getElementById("allCredId").innerHTML;
+        if(allCredIdHTML!=''){
+            allCredIdHTML += "<br />";
+        }
+	    document.getElementById("allCredId").innerHTML =  allCredIdHTML + credentialIdAscii;
         // 1: 2,
         // 3: -7,
         // -1: 1,
@@ -240,37 +258,60 @@ function login() {
 <button style="height:80px;width:300px; cursor: pointer;" onclick="login()">Login</button><br/><br/>
 
 <br/>
-<div>AuthenticatorSelection:<br/>
-    <div style="margin-left: 20px;">
-        <label for="authenticatorAttachment">authenticatorAttachment</label>
-        <select id="authenticatorAttachment"><option value="platform">platform</option><option value="cross-platform">cross-platform</option><option value="">all</option></select>
+<div>CredId(excludeCredentials/allowCredentials):<br/><input type=text style="width:100%"  id="credIdfield" /></div>
 
-        <br />
-        <label for="requireResidentKey">requireResidentKey</label>
-        <input type="checkbox" id="requireResidentKey" checked />
-
-        <br />
-        <label for="residentKey">residentKey</label>
-        <select id="residentKey"><option value="required">required</option><option value="preferred">preferred</option><option value="discouraged">discouraged</option></select>
-
-        <br />
-        <label for="userVerification">userVerification</label>
-        <select id="userVerification"><option value="preferred">preferred</option><option value="required">required</option><option value="discouraged">discouraged</option></select>
+<br/>
+<div>RP:<br/>
+    <div class="divInputOuter">
+        <div>id:<br/><input type=text id="rpIdField" style="width:100%" value=""></div>
+        <div>name:<br/><input type=text style="width:100%" id="rpNameField" value=""></div><br/>
     </div>
 </div>
 
-<br/>
-<div>CredId:<br/><input type=text style="width:100%"  id="credIdfield" /></div>
+<div>User:<br/>
+    <div class="divInputOuter">
+        <div>id:<br/><input type=text id="userIdField" value="abcd"></div>
+        <div>displayName:<br/><input type=text style="width:100%"  id="userDisplayNameField" value="abcd"></div>
+        <div>name:<br/><input type=text style="width:100%"  id="userNameField" value="abcd"></div><br/>
+    </div>
+</div>
 
-<br/>
-<div>UserId:<br/><input type=text id="userIdfield" value="abcd"></div>
+<div>AuthenticatorSelection:<br/>
+    <div class="divInputOuter">
+        <div>
+            <label for="authenticatorAttachment">authenticatorAttachment</label>
+            <select id="authenticatorAttachment"><option value="platform">platform</option><option value="cross-platform">cross-platform</option><option value="">all</option></select>
+        </div>
+        <div>
+            <label for="requireResidentKey">requireResidentKey</label>
+            <input type="checkbox" id="requireResidentKey" checked />
+        </div>
 
-<br/>
-<div>userDisplayName:<br/><input type=text size=200 id="userDisplayNameField" value=""></div>
+        <div>
+            <label for="residentKey">residentKey</label>
+            <select id="residentKey"><option value="required">required</option><option value="preferred">preferred</option><option value="discouraged">discouraged</option></select>
+        </div>
 
-<br/>
-<div>userName:<br/><input type=text size=200 id="userNameField" value=""></div><br/>
+        <div>
+            <label for="userVerification">userVerification</label>
+            <select id="userVerification"><option value="preferred">preferred</option><option value="required">required</option><option value="discouraged">discouraged</option></select>
+        </div>
+    </div>
+</div>
 
+<br />
+<div>Extensions:<br/>
+    <div class="divInputOuter">
+        <div>
+            <label for="credProps">credProps</label>
+            <input type="checkbox" id="credProps" checked />
+        </div>
+        <div>
+            <label for="devicePubKey">devicePubKey</label>
+            <input type="checkbox" id="devicePubKey" checked />
+        </div>
+    </div>
+</div>
 
 <br/>
 <b>CredIds</b>
@@ -293,5 +334,9 @@ function login() {
 <b>Result</b>
 <div id="loginResultPannel" class="retTxt"></div>
 
+<script>
+    document.getElementById("rpIdField").value = window.location.host;
+    document.getElementById("rpNameField").value = "test site";
+</script>
 </body>
 </html>
