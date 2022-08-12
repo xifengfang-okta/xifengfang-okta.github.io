@@ -105,7 +105,7 @@ function register() {
    if(credId!=""){
     credentials.push({
         type: 'public-key',
-        id: strToBin(cleanStr(newCredId)),
+        id: strToBin(cleanStr(credId)),
     });
    }
    var pubCreationOption = getPublicKeyCredentialCreationOptions();
