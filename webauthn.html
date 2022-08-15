@@ -200,18 +200,22 @@ function register() {
     });
 }
 
-const publicKeyCredentialRequestOptions = {
-    challenge: Uint8Array.from("challenge", c => c.charCodeAt(0)),  // should be a random string
-    allowCredentials: [{
-        //id: base64url.decode(credentialId2New),
-        type: 'public-key',
-        transports: ['internal'],
-    }
-    ],
-    timeout: 60000,
+function getPublicKeyCredentialRequestOptions() {
+    var pubGetOption = {
+        challenge: Uint8Array.from("challenge", c => c.charCodeAt(0)),  // should be a random string
+        allowCredentials: [{
+            //id: base64url.decode(credentialId2New),
+            type: 'public-key',
+            transports: ['internal'],
+        }
+        ],
+        timeout: 60000,
+    };
+    return pubGetOption;
 }
 
 function login() {
+    var publicKeyCredentialRequestOptions = getPublicKeyCredentialRequestOptions();
     var credid = document.getElementById("credIdfield").value;
     if(credid != '') {
       publicKeyCredentialRequestOptions.allowCredentials[0].id = base64url.decode(credid);
@@ -242,7 +246,7 @@ function login() {
         console.log("login successfully");
     }).catch(error => {
         console.log(error);
-	document.getElelmentById('loginResultPannel').innerHTML=error;
+	    document.getElementById('loginResultPannel').innerHTML=error;
     }).finally( () => {
         console.log("finally for login");
     });
