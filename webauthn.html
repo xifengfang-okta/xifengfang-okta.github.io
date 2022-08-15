@@ -96,9 +96,12 @@ function getPublicKeyCredentialCreationOptions(){
         pubKeyCredParams: [{alg: -7, type: "public-key"}, {alg: -257, type: "public-key"}],
         authenticatorSelection: getAuthenticatorSelection(),
         timeout: 60000,
-        //attestation: "direct",
+        //attestation: getAttestation(), // "direct",
         extensions: getExtension()
     };
+    if(document.getElementById("includeAttestation").checked) {
+        publicKeyCredentialCreationOptions.attestation = document.getElementById("attestation").value;
+    }
     return publicKeyCredentialCreationOptions;
 }
 
@@ -309,6 +312,12 @@ function login() {
 </div>
 
 <br />
+<div>
+    <input type="checkbox" id="includeAttestation" checked /><label for="attestation">Attestation</label>
+    <select id="attestation"><option value="direct">direct</option><option value="indirect">indirect</option><option value="enterprise">enterprise</option><option value="none">none</option></select>
+</div>
+
+<br />
 <div>Extensions:<br/>
     <div class="divInputOuter">
         <div>
@@ -321,6 +330,7 @@ function login() {
         </div>
     </div>
 </div>
+
 
 <br/>
 <b>CredIds</b>
@@ -338,6 +348,7 @@ function login() {
 <br/>
 <b>extension</b> <br/>
 <div id="extension" class="retTxt"></div>
+
 
 <br/>
 <b>Result</b>
