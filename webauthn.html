@@ -32,20 +32,19 @@ function cleanStr(str) {
 }
 
 function getAuthenticatorSelection(){
-   var authenticatorAttachment = document.getElementById("authenticatorAttachment").value;
-   var residentKey = document.getElementById("residentKey").value;
-   var userVerification = document.getElementById("userVerification").value;
-   var authenticatorSelection = {
-        requireResidentKey: document.getElementById("requireResidentKey").checked,
+   var requireResidentKey = document.getElementById("requireResidentKey").value
+   var authenticatorSelection = {};
+   if(document.getElementById("includeAuthenticatorAttachment").checked) {
+      authenticatorSelection.authenticatorAttachment = document.getElementById("authenticatorAttachment").value;
    }
-   if(authenticatorAttachment!="") {
-    authenticatorSelection.authenticatorAttachment = authenticatorAttachment;
+   if(document.getElementById("includeRequireResidentKey").checked) {
+      authenticatorSelection.requireResidentKey = document.getElementById("requireResidentKey").value === "true";
    }
-   if(residentKey!="") {
-    authenticatorSelection.residentKey = residentKey;
+   if(document.getElementById("includeResidentKey").checked) {
+      authenticatorSelection.residentKey = document.getElementById("residentKey").value;
    }
-   if(userVerification!="") {
-    authenticatorSelection.userVerification = userVerification;
+   if(document.getElementById("includeUserVerification").checked) {
+      authenticatorSelection.userVerification = document.getElementById("userVerification").value;
    }
    return authenticatorSelection;
 }
@@ -70,10 +69,13 @@ function getUserObj(){
 }
 
 function getExtension(){
-    var extension = {
-       credProps: document.getElementById("credProps").checked,
-       devicePubKey: document.getElementById("devicePubKey").checked
-    };
+    var extension = {};
+    if(document.getElementById("includeCredProps").checked) {
+        extension.credProps = document.getElementById("credProps").value === "true";
+    }
+    if(document.getElementById("includeDevicePubKey").checked) {
+        extension.devicePubKey = document.getElementById("devicePubKey").value === "true";
+    }
     return extension;
 }
 
@@ -286,21 +288,21 @@ function login() {
 <div>AuthenticatorSelection:<br/>
     <div class="divInputOuter">
         <div>
-            <label for="authenticatorAttachment">authenticatorAttachment</label>
-            <select id="authenticatorAttachment"><option value="platform">platform</option><option value="cross-platform">cross-platform</option><option value="">all</option></select>
+            <input type="checkbox" id="includeAuthenticatorAttachment" checked /><label for="authenticatorAttachment">authenticatorAttachment</label>
+            <select id="authenticatorAttachment"><option value="platform">platform</option><option value="cross-platform">cross-platform</option></select>
         </div>
         <div>
-            <label for="requireResidentKey">requireResidentKey</label>
-            <input type="checkbox" id="requireResidentKey" checked />
+            <input type="checkbox" id="includeRequireResidentKey" checked /><label for="requireResidentKey">requireResidentKey</label>
+            <select id="requireResidentKey"><option value=true>true</option><option value=false>false</option></select>
         </div>
 
         <div>
-            <label for="residentKey">residentKey</label>
+            <input type="checkbox" id="includeResidentKey" checked /><label for="residentKey">residentKey</label>
             <select id="residentKey"><option value="required">required</option><option value="preferred">preferred</option><option value="discouraged">discouraged</option></select>
         </div>
 
         <div>
-            <label for="userVerification">userVerification</label>
+            <input type="checkbox" id="includeUserVerification" checked /><label for="userVerification">userVerification</label>
             <select id="userVerification"><option value="preferred">preferred</option><option value="required">required</option><option value="discouraged">discouraged</option></select>
         </div>
     </div>
@@ -310,12 +312,12 @@ function login() {
 <div>Extensions:<br/>
     <div class="divInputOuter">
         <div>
-            <label for="credProps">credProps</label>
-            <input type="checkbox" id="credProps" checked />
+            <input type="checkbox" id="includeCredProps" checked /><label for="credProps">credProps</label>
+            <select id="credProps"><option value=true>true</option><option value=false>false</option></select>
         </div>
         <div>
-            <label for="devicePubKey">devicePubKey</label>
-            <input type="checkbox" id="devicePubKey" checked />
+            <input type="checkbox" id="includeDevicePubKey" checked /><label for="devicePubKey">devicePubKey</label>
+            <select id="devicePubKey"><option value=true>true</option><option value=false>false</option></select>
         </div>
     </div>
 </div>
