@@ -136,7 +136,25 @@ function login() {
                 allowCredentials: [],
                 timeout: 60000,
             }
-        });
+        }).then( assertion => {
+	        console.log("assertion:");
+	        console.log(assertion);
+	
+	        const userHandle = assertion.response.userHandle;
+	        const userHandleBtoA = binToStr(userHandle);
+	        console.log("userHandleBtoA:" + userHandleBtoA);
+	        document.getElementById("userHandle").innerHTML = userHandleBtoA;
+	
+	    
+	        // TODO, verify signature on the server side
+	        document.getElementById('loginResultPannel').innerHTML = "Login Success";
+	        console.log("login successfully");
+	    }).catch(error => {
+	        console.log(error);
+		    document.getElementById('loginResultPannel').innerHTML=error;
+	    }).finally( () => {
+	        console.log("finally for login");
+	    });
     }
     initPasskey();
 </script>
