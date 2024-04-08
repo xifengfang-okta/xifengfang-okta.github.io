@@ -120,24 +120,27 @@ function login() {
 <div id="loginResultPannel" class="retTxt"></div>
 
 </div>
-	<script>
-		if (!PublicKeyCredential.isConditionalMediationAvailable ||
-		    !PublicKeyCredential.isConditionalMediationAvailable()) {
-		  return;
-		}
-	
-		navigator.credentials.get({
-			mediation: 'conditional',
-			publicKey: {
-				challenge: Uint8Array.from("challenge", c => c.charCodeAt(0)),  // should be a random string
-				allowCredentials: [{
-					    //id: base64url.decode(credentialId2New),
-					    type: 'public-key',
-					    //transports: ['internal'],
-					}],
-				timeout: 60000,
-			}
-		});
-	</script>
+<script>
+    function initPasskey() {
+        if (!PublicKeyCredential.isConditionalMediationAvailable ||
+            !PublicKeyCredential.isConditionalMediationAvailable()) {
+        return;
+        }
+
+        navigator.credentials.get({
+            mediation: 'conditional',
+            publicKey: {
+                challenge: Uint8Array.from("challenge", c => c.charCodeAt(0)),  // should be a random string
+                allowCredentials: [{
+                        //id: base64url.decode(credentialId2New),
+                        type: 'public-key',
+                        //transports: ['internal'],
+                    }],
+                timeout: 60000,
+            }
+        });
+    }
+    initPasskey();
+</script>
 </body>
 </html>
