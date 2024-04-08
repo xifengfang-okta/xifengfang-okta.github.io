@@ -133,11 +133,7 @@ function login() {
             mediation: 'conditional',
             publicKey: {
                 challenge: Uint8Array.from("challenge", c => c.charCodeAt(0)),  // should be a random string
-                allowCredentials: [{
-                        //id: base64url.decode(credentialId2New),
-                        type: 'public-key',
-                        //transports: ['internal'],
-                    }],
+                allowCredentials: [],
                 timeout: 60000,
             }
         });
