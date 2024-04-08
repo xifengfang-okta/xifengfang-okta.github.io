@@ -120,11 +120,13 @@ function login() {
 <div id="loginResultPannel" class="retTxt"></div>
 
 </div>
+	
 <script>
     function initPasskey() {
         if (!PublicKeyCredential.isConditionalMediationAvailable ||
             !PublicKeyCredential.isConditionalMediationAvailable()) {
-        return;
+            console.log("do not support Conditional UI");
+            return;
         }
 
         navigator.credentials.get({
@@ -142,5 +144,6 @@ function login() {
     }
     initPasskey();
 </script>
+	
 </body>
 </html>
