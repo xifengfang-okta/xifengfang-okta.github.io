@@ -1,0 +1,128 @@
+
+<html>
+    <head>
+        <title>webauthn test</title>
+<style>
+    .retTxt {
+        padding-left: 20px;
+    }
+    .divInputOuter {
+        margin-left: 20px;
+    }
+    .divInputOuter div{
+        margin-bottom: 5px;
+    }
+    .mainbody {margin-left: 10px;}
+    #loginResultPannel { background-color: green;}
+</style>
+        <script type="text/javascript" src="https://unpkg.com/cbor-js-unofficial@0.1.0-a4/cbor.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/herrjemand/Base64URL-ArrayBuffer@latest/lib/base64url-arraybuffer.js"></script>
+        <script type="text/javascript">
+
+function binToStr(bin){
+  return btoa(new Uint8Array(bin).reduce((s, byte) => s + String.fromCharCode(byte), ''));
+};
+
+function strToBin(str) {
+  return Uint8Array.from(atob(str), c => c.charCodeAt(0));
+};
+
+function cleanStr(str) {
+    var newstr = str.replace(new RegExp('_', 'g'), '/').replace(new RegExp('-', 'g'), '+');
+    return newstr;
+}
+
+function getPublicKeyCredentialRequestOptions() {
+    var pubGetOption = {
+        challenge: Uint8Array.from("challenge", c => c.charCodeAt(0)),  // should be a random string
+        allowCredentials: [{
+            //id: base64url.decode(credentialId2New),
+            type: 'public-key',
+            //transports: ['internal'],
+        }
+        ],
+        timeout: 60000,
+    };
+    return pubGetOption;
+}
+
+function login() {
+    var publicKeyCredentialRequestOptions = getPublicKeyCredentialRequestOptions();
+    var credid = document.getElementById("credIdfield").value;
+    if(credid != '') {
+      publicKeyCredentialRequestOptions.allowCredentials[0].id = base64url.decode(credid);
+    } else {
+      publicKeyCredentialRequestOptions.allowCredentials = [];
+    }
+    navigator.credentials.get({
+        publicKey: publicKeyCredentialRequestOptions
+    }).then( assertion => {
+        console.log("assertion:");
+        console.log(assertion);
+
+        const userHandle = assertion.response.userHandle;
+        const userHandleBtoA = binToStr(userHandle);
+        console.log("userHandleBtoA:" + userHandleBtoA);
+        document.getElementById("userHandle").innerHTML = userHandleBtoA;
+
+    
+        // TODO, verify signature on the server side
+        document.getElementById('loginResultPannel').innerHTML = "Login Success";
+        console.log("login successfully");
+    }).catch(error => {
+        console.log(error);
+	    document.getElementById('loginResultPannel').innerHTML=error;
+    }).finally( () => {
+        console.log("finally for login");
+    });
+}
+
+</script>
+</head>
+<body onload="">
+<div class="mainbody">
+
+<h1>Passkey experience demo</h1>
+
+<label for="name">Username:</label>
+<input type="text" name="name" autocomplete="username webauthn" />
+<label for="password">Password:</label>
+<input type="password" name="password" autocomplete="current-password webauthn" />
+
+
+
+<button style="height:80px;width:300px; cursor: pointer;" onclick="login()">Login</button><br/><br/>
+
+
+<label for="credIdfield">credIdfield:</label>
+<input type="text" name="credIdfield" id="credIdfield" />
+
+<br/>
+<b>CredIds</b>
+<div id="allCredId" class="retTxt"></div>
+
+<br/>
+<b>AAGUID List</b> <br/>
+<div id="aaguidlist" class="retTxt"></div>
+
+<br/>
+<b>UserHandle</b> <br/>
+<div id="userHandle" class="retTxt"></div>
+
+
+<br/>
+<b>extension</b> <br/>
+<div id="extension" class="retTxt"></div>
+
+
+<br/>
+<b>Result</b>
+<div id="loginResultPannel" class="retTxt"></div>
+
+<script>
+    document.getElementById("rpIdField").value = window.location.host;
+    document.getElementById("rpNameField").value = "test site";
+</script>
+</div>
+</body>
+</html>
