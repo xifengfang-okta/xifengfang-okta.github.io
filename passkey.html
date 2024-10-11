@@ -69,6 +69,7 @@ function login() {
         // TODO, verify signature on the server side
         document.getElementById('loginResultPannel').innerHTML = "Login Success";
         console.log("login successfully");
+	document.getElementById("username").setAttribute("autocomplete", "username webauthn");
     }).catch(error => {
         console.log(error);
 	    document.getElementById('loginResultPannel').innerHTML=error;
@@ -85,7 +86,7 @@ function login() {
 <h1>Passkey experience demo</h1>
 
 <label for="name">Username:</label>
-<input type="text" name="name" autocomplete="username webauthn" />
+<input type="text" name="name" id="username" autocomplete="username webauthn" />
 <label for="password">Password:</label>
 <input type="password" name="password" autocomplete="current-password webauthn" />
 
