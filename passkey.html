@@ -134,7 +134,7 @@ function login() {
             mediation: 'conditional',
             publicKey: {
                 challenge: Uint8Array.from("challenge", c => c.charCodeAt(0)),  // should be a random string
-                allowCredentials: [],
+                allowCredentials: [{transports:['internal']}],
                 timeout: 60000,
             }
         }).then( assertion => {
