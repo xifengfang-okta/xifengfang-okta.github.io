@@ -136,6 +136,7 @@ function login() {
                 challenge: Uint8Array.from("challenge", c => c.charCodeAt(0)),  // should be a random string
                 allowCredentials: [],// [{transports:['internal']}],
 		hints: ['client-device'],
+		authenticatorSelection: {authenticatorAttachment: 'platform'}
                 timeout: 60000,
             }
         }).then( assertion => {
