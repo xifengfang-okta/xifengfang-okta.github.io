@@ -20,6 +20,7 @@
         <script type="text/javascript">
 
 function binToStr(bin){
+	console.log("test");
   return btoa(new Uint8Array(bin).reduce((s, byte) => s + String.fromCharCode(byte), ''));
 };
 
