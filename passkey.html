@@ -70,6 +70,7 @@ function login() {
         document.getElementById('loginResultPannel').innerHTML = "Login Success";
         console.log("login successfully");
 	document.getElementById("username").setAttribute("autocomplete", "username webauthn");
+	initPasskey();
     }).catch(error => {
         console.log(error);
 	    document.getElementById('loginResultPannel').innerHTML=error;
