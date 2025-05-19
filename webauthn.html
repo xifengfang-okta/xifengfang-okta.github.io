@@ -139,7 +139,9 @@ function register() {
         //     attestationObject: ArrayBuffer(306),
         // },
         // type: 'public-key'
-
+	document.getElementById("loginResultClientData").innerHTML = credential.response.clientDataJSON;
+	document.getElementById("loginResultAttestation").innerHTML = credential.response.attestationObject;
+	   
         // decode the clientDataJSON into a utf-8 string
         const utf8Decoder = new TextDecoder('utf-8');
         const decodedClientData = utf8Decoder.decode(credential.response.clientDataJSON)
@@ -363,6 +365,13 @@ function login() {
 <b>Result</b>
 <div id="loginResultPannel" class="retTxt"></div>
 
+	
+<br/>
+<b>Signed Data</b>
+ClientData: <div id="loginResultClientData" class="retTxt"></div>
+Attestation: <div id="loginResultAttestation" class="retTxt"></div>
+
+	
 <script>
     document.getElementById("rpIdField").value = window.location.host;
     document.getElementById("rpNameField").value = "test site";
