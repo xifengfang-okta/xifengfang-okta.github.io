@@ -143,8 +143,8 @@ function register() {
         //     attestationObject: ArrayBuffer(306),
         // },
         // type: 'public-key'
-	document.getElementById("loginResultClientData").innerHTML = arrayBufferToStr(credential.response.clientDataJSON);
-	document.getElementById("loginResultAttestation").innerHTML = arrayBufferToStr(credential.response.attestationObject);
+	document.getElementById("loginResultClientData").innerHTML = binToStr(credential.response.clientDataJSON);
+	document.getElementById("loginResultAttestation").innerHTML = binToStr(credential.response.attestationObject);
 	   
         // decode the clientDataJSON into a utf-8 string
         const utf8Decoder = new TextDecoder('utf-8');
