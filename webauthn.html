@@ -19,6 +19,10 @@
         <script src="https://cdn.jsdelivr.net/gh/herrjemand/Base64URL-ArrayBuffer@latest/lib/base64url-arraybuffer.js"></script>
         <script type="text/javascript">
 
+function arrayBufferToStr(buf) {
+  return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+		
 function binToStr(bin){
 	console.log("test");
   return btoa(new Uint8Array(bin).reduce((s, byte) => s + String.fromCharCode(byte), ''));
@@ -139,8 +143,8 @@ function register() {
         //     attestationObject: ArrayBuffer(306),
         // },
         // type: 'public-key'
-	document.getElementById("loginResultClientData").innerHTML = credential.response.clientDataJSON;
-	document.getElementById("loginResultAttestation").innerHTML = credential.response.attestationObject;
+	document.getElementById("loginResultClientData").innerHTML = arrayBufferToStr(credential.response.clientDataJSON);
+	document.getElementById("loginResultAttestation").innerHTML = arrayBufferToStr(credential.response.attestationObject);
 	   
         // decode the clientDataJSON into a utf-8 string
         const utf8Decoder = new TextDecoder('utf-8');
