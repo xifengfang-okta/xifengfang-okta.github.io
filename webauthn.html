@@ -90,9 +90,14 @@ function getRP(){
 }
 
 function getPublicKeyCredentialCreationOptions(){
+    var challenge = document.getElementById("challengefield").value;
+    if (!challenge) {
+	challenge = "challenge";
+    }
+	
     var publicKeyCredentialCreationOptions = {
         challenge: Uint8Array.from(     // This should be a random binary array
-            "challenge", c => c.charCodeAt(0)),   // should be a random string
+            challenge, c => c.charCodeAt(0)),   // should be a random string
         rp: getRP(),
         user: getUserObj(),
         pubKeyCredParams: [{alg: -7, type: "public-key"}, {alg: -257, type: "public-key"}],
@@ -273,6 +278,9 @@ function login() {
 <br/>
 <div>CredId(excludeCredentials/allowCredentials):<br/><input type=text style="width:100%"  id="credIdfield" /></div>
 
+<br/>
+<div>Challenge:<br/><input type=text style="width:100%"  id="challengefield" /></div>
+	
 <br/>
 <div>RP:<br/>
     <div class="divInputOuter">
