@@ -94,14 +94,13 @@ function getRP(){
 }
 
 function getPublicKeyCredentialCreationOptions(){
-    var challenge = document.getElementById("challengefield").value;
-    if (!challenge) {
-	challenge = "challenge";
+    var challengeStr = document.getElementById("challengefield").value;
+    if (!challengeStr) {
+	challengeStr = "challenge";
     }
 	
     var publicKeyCredentialCreationOptions = {
-        challenge: Uint8Array.from(     // This should be a random binary array
-            challenge, c => c.charCodeAt(0)),   // should be a random string
+        challenge: challengeStr,
         rp: getRP(),
         user: getUserObj(),
         pubKeyCredParams: [{alg: -7, type: "public-key"}, {alg: -257, type: "public-key"}],
